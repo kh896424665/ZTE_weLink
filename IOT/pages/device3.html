@@ -1,0 +1,227 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>土壤温湿度状态图</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../css/app.css" />
+		<style type="text/css">
+			h5 {
+				margin-top: 30px;
+				font-weight: bold;
+			}
+			.chart {
+				width: 100%;
+				height: 250px;
+				margin: 0;
+				padding:0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="mui-content">
+			
+			<div id="mui-content-padded">
+				<h5>温度仪表盘</h5>
+				<div id="temchart" class="chart" ></div>
+				<h5>湿度仪表盘</h5>
+				<div id="humchart" class="chart"></div>
+				<h5>温度折线图</h5>
+				<div id="tempic" class="chart"></div>
+				<h5>湿度折线图</h5>
+				<div id="humpic" class="chart"></div>
+			</div>
+		</div>
+		
+		<script src="../js/mui.min.js"></script>
+		<script src="../libs/echarts.js"></script>
+		<script type="text/javascript">
+			mui.getJSON('soilTem.json',function(data){
+				temPic.setOption({
+					series:[{
+						name:'温度',
+						data:data.tem
+					}],
+					xAxis:{
+						data:data.categories
+					}
+				});
+				
+			});
+			//温度仪表盘
+			var temChart=echarts.init(document.getElementById('temchart'));
+			var temchartoption = {
+				    backgroundColor:'#293C55',
+				    tooltip : {
+				        formatter: "{a} <br/>{b} : {c}℃"
+				    },
+				    toolbox: {
+				        feature: {
+				            restore: {},
+				            saveAsImage: {}
+				        }
+				    },
+				    series: [
+				        {
+				            name: '土壤温度',
+				            type: 'gauge',
+				            min:-20,
+				            max:60,
+				            radius:'100%',
+				            detail: {formatter:'{value}℃'},
+				            data:[{value:19,name:'℃'}]
+				        }
+				    ]
+				};
+				//使用刚制定的配置项和数据显示图
+				setInterval(function () {
+					   temchartoption.series[0].data[0].value = (Math.random()*(21-19+1)+19).toFixed(1) - 0;
+					   temChart.setOption(temchartoption, true);
+					},2000);
+				
+			//湿度仪表盘
+			var humChart=echarts.init(document.getElementById('humchart'));
+			var humchartoption = {
+				    backgroundColor:'#293C55',
+				    tooltip : {
+				        formatter: "{a} <br/>{b} : {c}%"
+				    },
+				    toolbox: {
+				        feature: {
+				            restore: {},
+				            saveAsImage: {}
+				        }
+				    },
+				    series: [
+				        {
+				            name: '土壤湿度',
+				            type: 'gauge',
+				            min:0,
+				            max:100,
+				            radius:'100%',
+				            detail: {formatter:'{value}%'},
+				            data: [{value: 60, name: '%'}]
+				        }
+				    ]
+				};
+			setInterval(function () {
+					   humchartoption.series[0].data[0].value = (Math.random()*(61-59+1)+59).toFixed(1) - 0;
+					   humChart.setOption(humchartoption, true);
+					},2000);
+		
+			//温度折线图
+			var temPic=echarts.init(document.getElementById("tempic"))
+			var tempicoption={
+						 
+					    tooltip: {
+					        trigger: 'axis'
+					    },
+					  	
+					    toolbox: {
+					        show: true,
+					        feature: {
+					            dataZoom: {
+					                yAxisIndex: 'none'
+					            },
+					            dataView: {readOnly: false},
+					            magicType: {type: ['line', 'bar']},
+					            restore: {},
+					            saveAsImage: {}
+					        }
+					    },
+					    xAxis:  {
+					        type: 'category',
+					        boundaryGap: false,
+					        data: []
+					    },
+					    yAxis: {
+					        type: 'value',
+					        axisLabel: {
+					            formatter: '{value} °C'
+					        }
+					    },
+					    series: [
+					        {
+					            name:'温度',
+					            type:'line',
+								data:[],
+					            markPoint: {
+					                data: [
+					                    {type: 'max', name: '最大值'},
+					                ]
+					            },
+					            markLine: {
+					                data: [
+					                    {type: 'average', name: '平均值'}
+					                ]
+					            }
+					        },
+					    ]
+			};
+			temPic.setOption(tempicoption);
+
+			//湿度曲线图
+			var humPic=echarts.init(document.getElementById("humpic"))
+			var humpicoption={
+						 
+					    tooltip: {
+					        trigger: 'axis'
+					    },
+					  
+					    toolbox: {
+					        show: true,
+					        feature: {
+					            dataZoom: {
+					                yAxisIndex: 'none'
+					            },
+					            dataView: {readOnly: false},
+					            magicType: {type: ['line', 'bar']},
+					            restore: {},
+					            saveAsImage: {}
+					        }
+					    },
+					    xAxis:  {
+					        type: 'category',
+					        boundaryGap: false,
+					        
+					        data: ['周一','周二','周三','周四','周五','周六','周日']
+					        
+					    },
+					    yAxis: {
+					        type: 'value',
+					        axisLabel: {
+					            formatter: '{value} %'
+					        }
+					    },
+					    series: [
+					        {
+					            name:'最高湿度',
+					            type:'line',
+					            
+					            data:[50, 55, 64, 52, 62, 73, 60],
+					            markPoint: {
+					            	
+					                data: [
+					                    {type: 'max', name: '最大值'},
+					                ]
+					            },
+					            markLine: {
+					                data: [
+					                    {type: 'average', name: '平均值'}
+					                ]
+					            }
+					        },
+					    ]
+			};
+			humPic.setOption(humpicoption);
+
+
+		</script>
+	</body>
+
+</html>
